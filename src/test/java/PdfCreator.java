@@ -1,7 +1,7 @@
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.layout.Document;
 import java.io.FileNotFoundException;
-
+import java.util.Date;
 
 
 public class PdfCreator  {
@@ -10,7 +10,7 @@ public class PdfCreator  {
 
     private Document document;
 
-    private final String MY_PATH = System.getProperty("user.dir") + "\\src\\test\\resources\\scrappedItems.pdf";
+    private final String MY_PATH = System.getProperty("user.dir") + "\\src\\test\\resources\\scrappedItems"+fillDate()+".pdf";
 
 
     public PdfCreator() throws FileNotFoundException {
@@ -29,6 +29,11 @@ public class PdfCreator  {
         if(document != null) {
             document.close();
         }
+    }
+
+    private String fillDate() {
+        Date date = new Date();
+        return date.toString().replace(" ","_").replace(":","_");
     }
 
 
