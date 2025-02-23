@@ -1,3 +1,5 @@
+package utilities;
+
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.layout.Document;
 import java.io.FileNotFoundException;
@@ -22,7 +24,6 @@ public class PdfCreator  {
     public  Document getDocument() {
         return document;
     }
-
 
 
     public void closeDocument() {
