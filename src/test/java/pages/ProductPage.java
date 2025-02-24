@@ -15,6 +15,8 @@ public class ProductPage {
 
     private final By SIZE_LABEL = By.xpath("//div[contains(@class, 'ProductItem__QuickAdd roman_sorting')]");
     private final By SPECYFIC_SIZE = By.xpath(".//div[contains(@class, 'ProductItem__QuickAdd__Item')]");
+//    private final By COLOURS = By.xpath(".//label[@class='color-switcher__option']//span");
+
 
     @FindBy(xpath = "//div[contains(@class, 'ProductItem__QuickAdd roman_sorting')]")
     private WebElement sizeLabel;
@@ -24,6 +26,9 @@ public class ProductPage {
 
     @FindBy(xpath = "//div[contains(@class, 'Grid__Cell 1/2 1/3--tablet 1/4--lap-and-up')]")
     private List<WebElement> productsWebElementList;
+
+    @FindBy(xpath = ".//label[@class='color-switcher__option']//span")
+    private List<WebElement> colours;
 
     @FindBy(xpath = "//div[@class='SectionHeader__Description']")
     private WebElement searchedProducts;
@@ -51,6 +56,12 @@ public class ProductPage {
     public List<WebElement> getAllProducts() {
         return new ArrayList<>(productsWebElementList);
     }
+
+    public List<WebElement> getAllColours() {
+        return new ArrayList<>(colours);
+    }
+
+
 
 //    public List<ProductComponent> getDisplayedProduct(Predicate<ProductComponent> condition) {
 //        return getAllProducts().stream().filter(condition).collect(Collectors.toList());
