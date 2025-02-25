@@ -5,8 +5,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import utilities.ProductComponent;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class ProductPage {
@@ -32,6 +36,9 @@ public class ProductPage {
 
     @FindBy(xpath = "//div[@class='SectionHeader__Description']")
     private WebElement searchedProducts;
+
+    @FindBy(xpath = ".//label[@class='color-switcher__option']//span")
+    private List<WebElement> productColors;
 
     public ProductPage (WebDriver driver) {
         PageFactory.initElements(driver, this);
@@ -60,8 +67,6 @@ public class ProductPage {
     public List<WebElement> getAllColours() {
         return new ArrayList<>(colours);
     }
-
-
 
 //    public List<ProductComponent> getDisplayedProduct(Predicate<ProductComponent> condition) {
 //        return getAllProducts().stream().filter(condition).collect(Collectors.toList());
