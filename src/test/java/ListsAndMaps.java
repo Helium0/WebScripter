@@ -1,9 +1,6 @@
 import org.openqa.selenium.WebElement;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class ListsAndMaps {
@@ -15,40 +12,20 @@ public class ListsAndMaps {
         return new ArrayList<>();
     }
 
-    public static String convertListToArrayAndReturnString(List<String> stringList, String http) {
 
-        String first = stringList.get(0).split(" ")[0];
-        if(!first.contains("200")) {
-            return first;
+    public static String productStringURL(String basicAttribute, String http) {
+        String productImage = "";
+        if(basicAttribute != null) {
+            productImage = Arrays.stream(basicAttribute.split(",\\s*"))
+                    .map(link -> link.split(" ")[0])
+                    .map(link -> link.replace("200","1200"))
+                    .map(link -> http+link)
+                    .findFirst()
+                    .orElse("Brak zdjecia");
         }
-        String updated = first.replace("200","1200");
-        return http+updated;
-
+        return productImage;
     }
 
-
-
-    public static String convertListToArrayAndReturnSecondString(List<String> stringList, String http) {
-        String first = stringList.get(0).split(" ")[0];
-        if(!first.contains("200")) {
-            return first;
-        }
-        String uptaded = first.replace("200","1200");
-        return http+uptaded;
-
-    }
-
-
-
-    public static List<String> convertListWebElIntoStringList(List<WebElement> webElementList) {
-        List<String> sample = createStringList();
-        for (WebElement example : webElementList) {
-            String text = example.getDomAttribute("srcset");
-            sample.add(text);
-        }
-        return sample;
-
-    }
 
     public static Set<String> convertSetInToList(List<String> sample) {
         Set<String> y = new HashSet<>(sample);
