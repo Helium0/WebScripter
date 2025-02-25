@@ -45,11 +45,13 @@ public class SearchProduct extends BasePage {
     private String tagProduct = "";
 
 
+//    private final String SEARCH_PRODUCT = "Swetry";
 
 
-    private final String SEARCH_PRODUCT = "Sweter Classic 02";
+//    private final String SEARCH_PRODUCT = "Sweter Classic 02";
 
 //    private final String SEARCH_PRODUCT = "Spodnie Lowen";
+//    private final String SEARCH_PRODUCT = "Spodnie";
 
 
 //    private final String SEARCH_PRODUCT = "Marynarka Beau";
@@ -57,144 +59,169 @@ public class SearchProduct extends BasePage {
 
 //        private final String SEARCH_PRODUCT = "Marynarka Stone";
 
-
+    private final String SEARCH_PRODUCT = "Spodnie";
 
     @Test
     public void searchForOneProduct() throws InterruptedException, IOException {
 
-            PdfCreator pdfCreator = new PdfCreator();
-            NavigationBarPage navigationBarPage = new NavigationBarPage(driver);
-            SearchPage searchPage = new SearchPage(driver);
-            ProductPage productPage = new ProductPage(driver);
+        PdfCreator pdfCreator = new PdfCreator();
+        NavigationBarPage navigationBarPage = new NavigationBarPage(driver);
+        SearchPage searchPage = new SearchPage(driver);
+        ProductPage productPage = new ProductPage(driver);
 
-            navigationBarPage.clickForSearch();
+        navigationBarPage.clickForSearch();
+        ProjectWaits.wait(driver).until(ExpectedConditions.attributeContains(searchPage.searchSpecyficProduct(), "placeholder", "Szukaj"));
+        ProjectHelper.actions(driver).click(searchPage.searchSpecyficProduct()).sendKeys(SEARCH_PRODUCT)
+                .keyDown(Keys.ENTER).keyUp(Keys.ENTER).perform();
+        ProjectWaits.waitForPresenceElementLocated(driver, productPage.searchProductSizeLabel());
+        ProjectWaits.waitForPresenceElementLocated(driver, productPage.searchSpecyficProductSize());
+        String searchResult = productPage.countSearchedProducts().getText();
+        List<WebElement> testProducts = productPage.getAllProducts();
+        List<String> firstColours = productPage.getAllColours().stream().map(e -> e.getDomAttribute("title")).collect(Collectors.toList());
+        Set<String> availableColours = ListsAndMaps.convertSetInToList(firstColours);
 
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-            ProjectWaits.wait(driver).until(ExpectedConditions.attributeContains(searchPage.searchSpecyficProduct(), "placeholder", "Szukaj"));
-            ProjectHelper.actions(driver).click(searchPage.searchSpecyficProduct()).sendKeys(SEARCH_PRODUCT)
-                    .keyDown(Keys.ENTER).keyUp(Keys.ENTER).perform();
-            ProjectWaits.waitForPresenceElementLocated(driver, productPage.searchProductSizeLabel());
-            ProjectWaits.waitForPresenceElementLocated(driver, productPage.searchSpecyficProductSize());
-            String searchResult = productPage.countSearchedProducts().getText();
-            List<WebElement> testProducts = productPage.availableProducts().findElements(By.xpath("//div[contains(@class, 'Grid__Cell 1/2 1/3--tablet 1/4--lap-and-up')]"));
-            List<String> firstColours = productPage.getAllColours().stream().map(e->e.getDomAttribute("title")).collect(Collectors.toList());
-            Set<String> availableColours = ListsAndMaps.convertSetInToList(firstColours);
-
-
-            pdfCreator.getDocument().add(new Paragraph(searchResult));
-            pdfCreator.getDocument().add(new Paragraph(
-                    "Dostepne kolory: "+availableColours));
-//        Thread.sleep(3000);
-//
-//        List<WebElement> pp = driver.findElements(By.xpath(".//img[@class='ProductItem__Image ProductItem__Image--alternate Image--fadeIn lazyautosizes Image--lazyLoaded']"));
-//        List<String> eh = pp.stream()
-//                .map(e -> e.getDomAttribute("data-srcset"))  // Pobieramy atrybut data-srcset
-////                        .filter(Objects::nonNull)  // Pomijamy null-e
-//                .flatMap(srcset -> Arrays.stream(srcset.split(",\\s*"))) // Dzielimy na poszczególne linki
-//                .map(link -> link.split(" ")[0]) // Pobieramy tylko sam link (bez rozmiaru)
-//                .map(link -> link.replace("200", "1200")) // Zamieniamy "200" na "1200"
-//                .map(link -> HTTP_PROTOCOL + link)// Dodajemy HTTP_PROTOCOL
-//                .filter(e->e.contains("1200") && !e.contains("11200"))
-//                .collect(Collectors.toList());
-////                Thread.sleep(2000);
-//        System.out.println("Liczba elementów w eh: " + eh.size());
+        pdfCreator.getDocument().add(new Paragraph(searchResult));
+        pdfCreator.getDocument().add(new Paragraph(
+                "Dostepne kolory: " + availableColours));
 
 
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        int scrollAmount = 1000; // Liczba pikseli do przewinięcia w każdym kroku
+        int maxScrolls = 20; // Maksymalna liczba przewinięć, aby uniknąć nieskończonej pętli
+        int scrolls = 0;
+
+        while (true) {
+            try {
+                js.executeScript("window.scrollBy(0, " + scrollAmount + ");");
+                Thread.sleep(3000); // Poczekaj na załadowanie nowych elementów
+                long updatedHeight = (long) js.executeScript("return document.body.scrollHeight");
+                // Spróbuj znaleźć elementy
+                List<WebElement> images = driver.findElements(By.xpath(".//img[@class='ProductItem__Image ProductItem__Image--alternate Image--fadeIn lazyautosizes Image--lazyLoaded']"));
+
+                if (scrolls >= 4) {
+
+                    break;
+                }
+            } catch (NoSuchElementException e) {
+                System.out.println("Nie ma");
+                throw e;
+
+            }
+            scrolls++;
+
+        }
 
 
-
-            ProjectHelper.js(driver);
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            for (WebElement el : testProducts) {
+        for (int i = 0; i < testProducts.size(); i++) {   // iteracja po długości listy produktów
 
 
-                WebElement productName = el.findElement(By.xpath(".//h5[@class='ProductItem__Title Heading']/a"));
-                WebElement productPrice = el.findElement(By.xpath(".//div[contains(@class, 'ProductItem__PriceList  Heading')]//span"));
+            WebElement product = testProducts.get(i);
 
-                Thread.sleep(3000);
+            WebElement productName = product.findElement(By.xpath(".//h5[@class='ProductItem__Title Heading']/a"));
+            WebElement productPrice = product.findElement(By.xpath(".//div[contains(@class, 'ProductItem__PriceList  Heading')]//span"));
 
-                List<WebElement> pp = driver.findElements(By.xpath(".//img[@class='ProductItem__Image ProductItem__Image--alternate Image--fadeIn lazyautosizes Image--lazyLoaded']"));
-                List<String> eh = pp.stream()
-                        .map(e -> e.getDomAttribute("data-srcset"))  // Pobieramy atrybut data-srcset
-//                        .filter(Objects::nonNull)  // Pomijamy null-e
-                        .flatMap(srcset -> Arrays.stream(srcset.split(",\\s*"))) // Dzielimy na poszczególne linki
-                        .map(link -> link.split(" ")[0]) // Pobieramy tylko sam link (bez rozmiaru)
-                        .map(link -> link.replace("200", "1200")) // Zamieniamy "200" na "1200"
-                        .map(link -> HTTP_PROTOCOL + link)// Dodajemy HTTP_PROTOCOL
-                        .filter(e -> e.contains("1200") && !e.contains("11200"))
-                        .collect(Collectors.toList());
-//                Thread.sleep(2000);
-                System.out.println("Liczba elementów w eh: " + pp.size());
+            ProjectWaits.wait(driver).until(ExpectedConditions
+                    .presenceOfElementLocated(By.xpath(".//img[@class='ProductItem__Image ProductItem__Image--alternate Image--fadeIn lazyautosizes Image--lazyLoaded']")));
+
+            String productImage;
+            String productImageTwo;
+            try {
+                WebElement pictureProduct = product.findElement(By.xpath(".//img[@class='ProductItem__Image ProductItem__Image--alternate Image--fadeIn lazyautosizes Image--lazyLoaded']"));
+                productImage = pictureProduct.getDomAttribute("data-srcset");
+                WebElement pictureProductTwo = product.findElement(By.xpath(".//img[@class='ProductItem__Image Image--fadeIn lazyautosizes Image--lazyLoaded']"));
+                productImageTwo = pictureProductTwo.getDomAttribute("data-srcset");
+
+            } catch (NoSuchElementException e) {
+                productImage = "Brak obrazu";
+                productImageTwo = "Brak obrazu";
+            }
+
+            String updatedPictureProduct = ListsAndMaps.productStringURL(productImage, HTTP_PROTOCOL);
+            System.out.println(updatedPictureProduct + "          OK");
 
 
-                tagProduct = PRODUCT_TAG;
+            tagProduct = PRODUCT_TAG;
 
-                try {
-                    WebElement productTag = el.findElement(By.xpath(".//span[@class='ProductItem__Label Heading Text--subdued']"));
-                    tagProduct = (String) js.executeScript("return arguments[0].textContent;", productTag);
-                    if (tagProduct.trim().contains("OFF")) {
-                        priceAfterdiscount = true;
-                    }
-                } catch (NoSuchElementException e) {
+            try {
+                WebElement productTag = product.findElement(By.xpath(".//span[@class='ProductItem__Label Heading Text--subdued']"));
+                tagProduct = (String) js.executeScript("return arguments[0].textContent;", productTag);
+                if (tagProduct.trim().contains("OFF")) {
+                    priceAfterdiscount = true;
+                }
+            } catch (NoSuchElementException e) {
+
+            }
+
+            priceProduct = (String) js.executeScript("return arguments[0].textContent;", productPrice);
+
+            List<WebElement> productColors = product.findElements(By.xpath(".//label[@class='color-switcher__option']//span"));
+            String colourName = productColors.stream().map(element -> element.getDomAttribute("title")).findFirst().orElse("bas");
+            List<WebElement> productWeb = product.findElements(By.xpath(".//div[@class='ProductItem__Wrapper']/a"));
+
+            for (WebElement elr : productWeb) {
+                ee = elr.getDomAttribute("href");
+
+            }
+
+            List<WebElement> productSizes = product.findElements(By.xpath(".//div[@class='ProductItem__QuickAdd__Item ']"));
+            List<String> noDuplicatedSizes = productSizes.stream().map(element -> (String) js.executeScript("return arguments[0].textContent;", element))
+                    .map(e -> e.isEmpty() ? "Brak" : e).collect(Collectors.toList());
+            if (noDuplicatedSizes.isEmpty()) {
+                noDuplicatedSizes = List.of("Brak");
+            }
+
+
+            String updatedPictureProductTwo = ListsAndMaps.productStringURL(productImageTwo, HTTP_PROTOCOL);
+            System.out.println(updatedPictureProductTwo + "          OK");
+
+
+            Image first = null;
+            try {
+                if (!"https:Brak".contains(updatedPictureProduct)) {
+                    first = ImageCreator.convertStrigInToImage(updatedPictureProduct);
+                } else {
+                    updatedPictureProduct = "Brak obrazu";
 
                 }
+            } catch (IOException e) {
+                System.out.println("Inny blad przy pierwszym obrazie");
+            }
 
-                priceProduct = (String) js.executeScript("return arguments[0].textContent;", productPrice);
+            Image second = null;
+            try {
+                if (!"https:Brak".contains(updatedPictureProductTwo)) {
+                    second = ImageCreator.convertStrigInToImage(updatedPictureProductTwo);
+                } else {
+                    updatedPictureProductTwo = "Brak obrazu";
+                }
+            } catch (IOException e) {
+                System.out.println("Inny blad przy drugim obrazie");
+            }
 
 
-                List<WebElement> productColors = el.findElements(By.xpath(".//label[@class='color-switcher__option']//span"));
+            pdfCreator.getDocument().add(new Paragraph("\n" + "Wyswietlony produkt: " + productName.getText()));
+            pdfCreator.getDocument().add(new Paragraph("Kolor: " + colourName + " " + " [] " + "Cena: "
+                    + priceProduct + " [] " + "Cena po rabacie: " + priceAfterdiscount + " [] " + "Oznaczenie produktu: " + tagProduct + "\n"));
+            pdfCreator.getDocument().add(new Paragraph("Dostepne rozmiary w tym kolorze: " + noDuplicatedSizes));
+            pdfCreator.getDocument().add(new Paragraph("Link do strony produktu: " + "\n" + WEBSITE_URL + ee));
+
+            if (updatedPictureProduct.equals("Brak obrazu") && updatedPictureProductTwo.equals("Brak obrazu")) {
+                pdfCreator.getDocument().add(new Paragraph("Brak obrazu oraz linku do zdjecia dla tego produktu"));
+            } else {
+                pdfCreator.getDocument().add(new Paragraph("Link do zdjecia: " + "\n").add(ScrapperHelper.convertStringInToURI(updatedPictureProduct, PdfAction.createURI(updatedPictureProduct))));
+                pdfCreator.getDocument().add(new Paragraph().add(ScrapperHelper.convertStringInToURI(updatedPictureProductTwo, PdfAction.createURI(updatedPictureProductTwo))));
+            }
 
 
-                String p = productColors.stream().map(element -> element.getDomAttribute("title")).findFirst().orElse("bas");
-
-
-                List<WebElement> productWeb = el.findElements(By.xpath(".//div[@class='ProductItem__Wrapper']/a"));
-
-                for (WebElement elr : productWeb) {
-                    ee = elr.getDomAttribute("href");
-
-
+                if (first != null && second !=null) {
+                    pdfCreator.getDocument().add(first);
+                    pdfCreator.getDocument().add(second);
+                } else {
+                    System.out.println("Obraz pierwszy jest null - pomijam dodawanie do PDF");
+                    System.out.println("Obraz drugi jest null - pomijam dodawanie do PDF");
                 }
 
-                List<WebElement> productSizes = el.findElements(By.xpath(".//div[@class='ProductItem__QuickAdd__Item ']"));
-                List<String> noDuplicatedSizes = productSizes.stream().map(element -> (String) js.executeScript("return arguments[0].textContent;", element))
-                        .map(e -> e.isEmpty() ? "Brak" : e).collect(Collectors.toList());
-                if (noDuplicatedSizes.isEmpty()) {
-                    noDuplicatedSizes = List.of("Brak");
-                }
-
-
-                wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//img[@class='ProductItem__Image ProductItem__Image--alternate Image--fadeIn lazyautosizes Image--lazyLoaded']")));
-
-                List<WebElement> pp2 = driver.findElements(By.xpath(".//img[@class='ProductItem__Image Image--fadeIn lazyautosizes Image--lazyLoaded']"));
-
-
-
-//                Image imFirst = ImageCreator.convertStrigInToImage(ListsAndMaps.convertListToArrayAndReturnString(ListsAndMaps.convertListWebElIntoStringList(pp),HTTP_PROTOCOL));
-//                Image imTwo = ImageCreator.convertStrigInToImage(ListsAndMaps.convertListToArrayAndReturnSecondString(ListsAndMaps.convertListWebElIntoStringList(pp2),HTTP_PROTOCOL));
-
-//                imFirst.scaleToFit(200,300);
-//                imTwo.scaleToFit(200,300);
-//                eh = List.of(eh.size());
-
-//                Thread.sleep(3000);
-//
-//                for (int i = 0; i<pp.size(); i++)
-//                    String productLink = (i < eh.size()) ? eh.get(i) : "Brak zdjecia";
-                    pdfCreator.getDocument().add(new Paragraph("\n" + "Wyswietlony produkt: " + productName.getText()));
-                    pdfCreator.getDocument().add(new Paragraph("Kolor: " + p + " " + " [] " + "Cena: "
-                            + priceProduct + " [] " + "Cena po rabacie: " + priceAfterdiscount + " [] " + "Oznaczenie produktu: " + tagProduct + "\n"));
-                    pdfCreator.getDocument().add(new Paragraph("Dostepne rozmiary w tym kolorze: " + noDuplicatedSizes));
-                    pdfCreator.getDocument().add(new Paragraph("Link do strony produktu: " + "\n" + WEBSITE_URL + ee));
-                for (int i = 0; i<pp.size(); i++) {
-                    String productLink = (i < eh.size()) ? eh.get(i) : "Brak zdjecia";
-                    pdfCreator.getDocument().add(new Paragraph("Link do zdjecia: " + "\n").add(ScrapperHelper.convertStringInToURI(productLink, PdfAction.createURI(productLink))));
-                }
-
-
-//                pdfCreator.getDocument().add(imFirst);
-//                pdfCreator.getDocument().add(imTwo);
 
             }
             pdfCreator.closeDocument();
@@ -202,3 +229,6 @@ public class SearchProduct extends BasePage {
 
         }
     }
+
+
+
