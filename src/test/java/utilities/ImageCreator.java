@@ -11,7 +11,6 @@ public class ImageCreator {
 
 
 
-//    ImageData imageData = ImageDataFactory.create(new URL());
 
     private static ImageData createImageStringData(String text) throws MalformedURLException {
         return ImageDataFactory.create(new URL(text));
