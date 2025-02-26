@@ -86,19 +86,22 @@ public class SearchProduct extends BasePage {
 
 
         JavascriptExecutor js = (JavascriptExecutor) driver;
+        ProjectWaits.wait(driver).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//button[contains(@aria-label,'Close dialog')]"))).click();
 
         int scrollAmount = 1000; // Liczba pikseli do przewinięcia w każdym kroku
-        int maxScrolls = 20; // Maksymalna liczba przewinięć, aby uniknąć nieskończonej pętli
-        int scrolls = 0;
+//        int scrolls = 0;
+        boolean hasNextPage = true;
 
+
+        while (hasNextPage) {
+            int scrolls = 0;
         while (true) {
             try {
                 js.executeScript("window.scrollBy(0, " + scrollAmount + ");");
                 Thread.sleep(3000); // Poczekaj na załadowanie nowych elementów
                 long updatedHeight = (long) js.executeScript("return document.body.scrollHeight");
                 // Spróbuj znaleźć elementy
-                List<WebElement> images = driver.findElements(By.xpath(".//img[@class='ProductItem__Image ProductItem__Image--alternate Image--fadeIn lazyautosizes Image--lazyLoaded']"));
-
+//
                 if (scrolls >= 4) {
 
                     break;
@@ -137,6 +140,7 @@ public class SearchProduct extends BasePage {
                 productImageTwo = "Brak obrazu";
             }
 
+//            driver.findElement(By.cssSelector(".needsclick klaviyo-close-form go2324193863 kl-private-reset-css-Xuajs1")).click();
             String updatedPictureProduct = ListsAndMaps.productStringURL(productImage, HTTP_PROTOCOL);
             System.out.println(updatedPictureProduct + "          OK");
 
@@ -227,6 +231,14 @@ public class SearchProduct extends BasePage {
             pdfCreator.closeDocument();
 
 
+        }
+
+        try {
+            WebElement nextPage = driver.findElement(By.xpath("//a[@title='Następna strona']"));
+            nextPage.click();
+        } catch (NoSuchElementException e) {
+            System.out.println("");
+        }
         }
     }
 
