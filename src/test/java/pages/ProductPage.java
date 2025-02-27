@@ -1,11 +1,14 @@
 package pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import utilities.ProductComponent;
+import waits.ProjectWaits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +22,8 @@ public class ProductPage {
 
     private final By SIZE_LABEL = By.xpath("//div[contains(@class, 'ProductItem__QuickAdd roman_sorting')]");
     private final By SPECYFIC_SIZE = By.xpath(".//div[contains(@class, 'ProductItem__QuickAdd__Item')]");
-//    private final By COLOURS = By.xpath(".//label[@class='color-switcher__option']//span");
+
+
 
 
     @FindBy(xpath = "//div[contains(@class, 'ProductItem__QuickAdd roman_sorting')]")
@@ -40,6 +44,11 @@ public class ProductPage {
     @FindBy(xpath = ".//label[@class='color-switcher__option']//span")
     private List<WebElement> productColors;
 
+    @FindBy(xpath = "//a[@title='Następna strona']")
+    private WebElement nextPageElement;
+
+
+
     public ProductPage (WebDriver driver) {
         PageFactory.initElements(driver, this);
     }
@@ -52,9 +61,6 @@ public class ProductPage {
         return this.SPECYFIC_SIZE;
     }
 
-    public WebElement availableProducts() {
-        return this.products;
-    }
 
     public WebElement countSearchedProducts() {
         return this.searchedProducts;
@@ -68,8 +74,31 @@ public class ProductPage {
         return new ArrayList<>(colours);
     }
 
-//    public List<ProductComponent> getDisplayedProduct(Predicate<ProductComponent> condition) {
-//        return getAllProducts().stream().filter(condition).collect(Collectors.toList());
-//    }
+    public boolean nextPageProducts(boolean hasNextPage) {
+        try {
+            if (nextPageElement.isDisplayed() && nextPageElement.isEnabled()) {
+                nextPageElement.click();
+                ProjectWaits.wait(driver).until(ExpectedConditions.visibilityOfAllElements(productsWebElementList));
+            } else {
+                hasNextPage = false;
+            }
+        } catch (NoSuchElementException e) {
+            System.out.println("Brak nastepnej strony");
+            hasNextPage = false;
+
+        }
+        return hasNextPage;
+
+    }
+
+    public  String productPicture (WebElement element, By by, String text) {
+        String productImage = "";
+        try {
+            String pictureAttribute = element.findElement(by).getDomAttribute(text);
+        } catch (NoSuchElementException e) {
+            productImage = "Brak obrazu";
+        }
+        return productImage;
+    }
 
 }
