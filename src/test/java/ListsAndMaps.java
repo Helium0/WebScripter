@@ -1,16 +1,9 @@
-import org.openqa.selenium.WebElement;
-
 import java.util.*;
 
 
 public class ListsAndMaps {
 
 
-
-
-    private static List<String> createStringList() {
-        return new ArrayList<>();
-    }
 
 
     public static String productStringURL(String basicAttribute, String http) {
