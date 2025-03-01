@@ -17,7 +17,6 @@ public class BasePage {
 
 
     protected WebDriver driver;
-    protected JSONArray jsonScrap = new JSONArray();
 
     private final By POLICY = By.id("shopify-pc__banner__btn-accept");
     private final By COOKIES = By.cssSelector(".CustomCookiePop_exit");
@@ -34,7 +33,6 @@ public class BasePage {
         driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(10));
         driver.findElement(POLICY).click();
         ProjectWaits.wait(driver).until(ExpectedConditions.elementToBeClickable(COOKIES)).click();
-//        driver.findElement(COOKIES).click();
     }
 
 
