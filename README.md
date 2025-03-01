@@ -21,12 +21,17 @@ What script do?
 
 In conclusion we can click on hyperlink to see product or scroll down to the next page to see product images
 
+** When you search "Spodnie" you will gather also different kind of products that`s why I have dress in PDF.
+This is how "search" works on this webpage.
+
 > * That`s first page from PDF document:
 ![product_details.png](product_details.png)
 
 > * Next pages:
 ![product_images.png](product_images.png)
 ![product_images_two.png](product_images_two.png)
+> * One product sample - Spodnica Stef
+![spodnica_stef.png](spodnica_stef.png)
 > * After click hyperlink product image:
 ![product_image_from_hyperlink.png](product_image_from_hyperlink.png)
 > * After click hyperlink product website:
