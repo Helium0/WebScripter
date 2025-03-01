@@ -21,4 +21,14 @@ What script do?
 
 In conclusion we can click on hyperlink to see product or scroll down to the next page to see product images
 
+> * That`s first page from PDF document:
+![product_details.png](product_details.png)
+
+> * Next pages:
+![product_images.png](product_images.png)
+![product_images_two.png](product_images_two.png)
+> * After clik hyperlink product image:
+![product_image_from_hyperlink.png](product_image_from_hyperlink.png)
+> * After click hyperlink product website:
+![product_website.png](product_website.png)
 
