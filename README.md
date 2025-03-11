@@ -12,7 +12,7 @@
 > * Itextpdf
 > * POM model
 
-What script do?
+What script does?
 - counts products in general
 - shows all available colours 
 - each product has his special details: colour, price, discount if available, product tag, available sizes
